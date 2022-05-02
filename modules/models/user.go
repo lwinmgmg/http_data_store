@@ -8,7 +8,7 @@ import (
 type User struct {
 	gorm.Model
 	UserName string `gorm:"" json:"username"`
-	Password string `json:"password"`
+	Password string
 }
 
 func (user *User) Create() *User {
@@ -22,12 +22,24 @@ func GetAllUser() []User {
 	return users
 }
 
-func GetUserById(id uint) (*User, *gorm.DB) {
+func GetUserById(id uint) *User {
+	var user User
+	db.Where("id=?", id).Find(&user)
+	return &user
+}
+
+func DeleteById(id uint) *User {
+	var user User
+	db.Where("id=?", id).Delete(&user)
+	return &user
+}
+
+func GetUserForUpdateById(id uint) (*User, *gorm.DB) {
 	var user User
 	tx := db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
-		  tx.Rollback()
+			tx.Rollback()
 		}
 	}()
 	tx.Clauses(
@@ -36,10 +48,4 @@ func GetUserById(id uint) (*User, *gorm.DB) {
 		},
 	).Where("id=?", id).Find(&user)
 	return &user, tx
-}
-
-func DeleteById(id uint) *User {
-	var user User
-	db.Where("id=?", id).Delete(&user)
-	return &user
 }

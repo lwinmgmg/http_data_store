@@ -13,9 +13,9 @@ var (
 )
 
 func main() {
-	app := gin.New()
+	app := gin.Default()
 	api.RegisterRoutes(app)
-	err := app.Run()
+	err := app.Run(fmt.Sprintf("%v:%v", HOST, PORT))
 	if err != nil {
 		fmt.Println("Error on running server :", err)
 		return
