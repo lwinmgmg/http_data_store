@@ -3,14 +3,23 @@ package main
 import (
 	"fmt"
 
-	"github.com/lwinmgmg/http_data_store/modules/models"
+	"github.com/gin-gonic/gin"
+	"github.com/lwinmgmg/http_data_store/api"
+)
+
+var (
+	HOST string = "localhost"
+	PORT int    = 8000
 )
 
 func main() {
-	fmt.Println("Started")
-	user, _ := models.GetUserById(3)
-	if user.ID != 0 {
-		models.DeleteById(user.ID)
+	app := gin.New()
+	api.RegisterRoutes(app)
+	err := app.Run()
+	if err != nil {
+		fmt.Println("Error on running server :", err)
+		return
 	}
-	fmt.Printf("user: %v\n", user)
+	fmt.Println("Server started on PORT :", PORT)
+
 }

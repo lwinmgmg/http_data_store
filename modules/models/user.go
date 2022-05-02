@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+)
 
 type User struct {
 	gorm.Model
@@ -21,8 +24,18 @@ func GetAllUser() []User {
 
 func GetUserById(id uint) (*User, *gorm.DB) {
 	var user User
-	db := db.Where("id=?", id).Find(&user)
-	return &user, db
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+		  tx.Rollback()
+		}
+	}()
+	tx.Clauses(
+		clause.Locking{
+			Strength: "UPDATE",
+		},
+	).Where("id=?", id).Find(&user)
+	return &user, tx
 }
 
 func DeleteById(id uint) *User {
