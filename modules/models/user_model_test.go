@@ -3,7 +3,7 @@ package models
 import "testing"
 
 func Test_GetAllUser(t *testing.T) {
-	users := GetAllUser()
+	users, _ = GetAllUser()
 	if len(users) > 0 {
 		t.Errorf("Expected no user, got %v users", len(users))
 	}
@@ -12,7 +12,7 @@ func Test_GetAllUser(t *testing.T) {
 		Password: "ABC",
 	}
 	user.Create()
-	users = GetAllUser()
+	users, _ = GetAllUser()
 	if len(users) != 1 {
 		t.Errorf("Expected one user, got %v users", len(users))
 	}
