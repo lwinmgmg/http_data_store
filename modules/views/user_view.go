@@ -6,9 +6,13 @@ import (
 	"github.com/lwinmgmg/http_data_store/helper"
 )
 
+var (
+	UserReg *regexp.Regexp
+)
+
 type UserRead struct {
 	ID       uint   `json:"id"`
-	UserName string `json:"username"`
+	UserName string `gorm:"column:username" json:"username"`
 	Key      string `json:"key"`
 }
 
@@ -21,7 +25,8 @@ func (user *UserCreate) Validate() error {
 	if user.UserName == nil {
 		return helper.NewCustomError("Username can't be empty", helper.ValidationError)
 	}
-	isMatch, _ := regexp.MatchString("^[a-z]*[0-9a-z]*", *user.UserName)
+	UserReg = regexp.MustCompile(`^[a-z]*[0-9a-z]*`)
+	isMatch := UserReg.MatchString(*user.UserName)
 	if !isMatch {
 		return helper.NewCustomError("Username can be use lowercase character and number", helper.ValidationError)
 	}
@@ -44,7 +49,8 @@ type UserUpdate struct {
 func (user *UserUpdate) Validate() (map[string]interface{}, error) {
 	userMap := make(map[string]interface{}, 3)
 	if user.UserName != nil {
-		isMatch, _ := regexp.MatchString("^[a-z]*[0-9a-z]*", *user.UserName)
+		UserReg = regexp.MustCompile(`^[a-z]*[0-9a-z]*`)
+		isMatch := UserReg.MatchString(*user.UserName)
 		if !isMatch {
 			return nil, helper.NewCustomError("Username can be use lowercase character and number", helper.ValidationError)
 		}

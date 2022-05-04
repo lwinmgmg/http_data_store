@@ -1,20 +1,20 @@
 package models
 
-import "testing"
+import (
+	"testing"
+)
 
-func Test_GetAllUser(t *testing.T) {
-	users, _ = GetAllUser()
-	if len(users) > 0 {
-		t.Errorf("Expected no user, got %v users", len(users))
+func TestGetAllUser(t *testing.T) {
+	user1 := &User{UserName: "lwinmgmg"}
+	user1, err := user1.Create()
+	if err != nil {
+		t.Error(err)
 	}
-	user := User{
-		UserName: "LMM",
-		Password: "ABC",
+	users, err := GetAllUser()
+	if err != nil {
+		t.Error(err)
 	}
-	user.Create()
-	users, _ = GetAllUser()
-	if len(users) != 1 {
-		t.Errorf("Expected one user, got %v users", len(users))
+	if len(users) == 0 {
+		t.Error("User just added but no user")
 	}
-	DeleteById(user.ID)
 }

@@ -5,11 +5,16 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+
 type User struct {
 	gorm.Model
 	UserName string `gorm:"index;unique;size:50;column:username" json:"username"`
-	Password string `gorm:"not null;size:150"`
+	Password string `gorm:"not null;size:150" json:"password"`
 	Key      string `gorm:"size:256" json:"key"`
+}
+
+func (user *User) TableName() string {
+	return *prefix + "_users"
 }
 
 func (user *User) Create() (*User, error) {
@@ -19,18 +24,18 @@ func (user *User) Create() (*User, error) {
 
 func GetAllUser() ([]User, error) {
 	var users []User
-	err := db.Find(&users).Error
+	err := db.Select("id", "username", "key").Find(&users).Error
 	return users, err
 }
 
 func GetUserById(id uint) (*User, error) {
 	var user User
-	return &user, db.Where("id=?", id).Find(&user).Error
+	return &user, db.Select("id", "username", "key").Where("id=?", id).First(&user).Error
 }
 
 func DeleteUserById(id uint) (*User, error) {
 	var user User
-	res := db.Where("id=?", id).Find(&user)
+	res := db.Select("id").Where("id=?", id).Find(&user)
 	if res.Error != nil {
 		return &user, res.Error
 	}
