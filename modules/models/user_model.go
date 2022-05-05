@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-
 type User struct {
 	gorm.Model
 	UserName string `gorm:"index;unique;size:50;column:username" json:"username"`
@@ -46,6 +45,12 @@ func UpdateUserById(id uint, data map[string]interface{}) (*User, error) {
 	var user User
 	err := db.Where("id=?", id).Find(&user).Updates(data).Error
 	return &user, err
+}
+
+func GetUserIdByUserName(username string) uint {
+	var user User
+	db.Select("id").Where("username=?", username).First(&user)
+	return user.ID
 }
 
 func GetUserForUpdateById(id uint) (*User, *gorm.DB) {

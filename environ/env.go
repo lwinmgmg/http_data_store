@@ -33,6 +33,7 @@ type Environ struct {
 
 	//just for initial
 	HDS_TOKEN_KEY             string
+	HDS_TOKEN_AUDIENCE        string
 	HDS_TOKEN_CHANGE_ALWAYS   bool
 	HDS_TOKEN_DEFAULT_TIMEOUT int // in second
 
@@ -68,6 +69,7 @@ func NewEnviron() *Environ {
 		HDS_LOG_LEVEL:             getEnviron("HDS_LOG_LEVEL", "INFO"),
 
 		HDS_TOKEN_KEY:             getEnviron("HDS_TOKEN_KEY", "secret"),
+		HDS_TOKEN_AUDIENCE:        getEnviron("HDS_TOKEN_AUDIENCE", "admin"),
 		HDS_TOKEN_CHANGE_ALWAYS:   boolParser(getEnviron("HDS_TOKEN_CHANGE_ALWAYS", false), false),
 		HDS_TOKEN_DEFAULT_TIMEOUT: intParser(getEnviron("HDS_TOKEN_DEFAULT_TIMEOUT", 24*60*60), 24*60*60),
 		HDS_ADMIN_PASSWORD:        getEnviron("HDS_ADMIN_PASSWORD", "admin"),

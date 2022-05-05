@@ -1,19 +1,18 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/lwinmgmg/http_data_store/dbm"
+	"github.com/lwinmgmg/http_data_store/environ"
 	"gorm.io/gorm"
 )
 
 var (
 	db     *gorm.DB
 	prefix *string
+	env    *environ.Environ = environ.GetAllEnv()
 )
 
 func init() {
-	fmt.Println("ABCD")
 	if db == nil {
 		if err := dbm.ConnectSqlite(); err != nil {
 			panic(err)
