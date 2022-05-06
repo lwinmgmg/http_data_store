@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lwinmgmg/http_data_store/api"
 	"github.com/lwinmgmg/http_data_store/environ"
+	"github.com/lwinmgmg/http_data_store/helper"
 	"github.com/lwinmgmg/http_data_store/modules/models"
 )
 
@@ -17,7 +18,8 @@ var (
 
 func main() {
 	models.SettingUp(env.HDS_TABLE_PREFIX)
-	app := gin.Default()
+	app := gin.New()
+	app.Use(gin.Logger(), gin.CustomRecovery(helper.InternalServerErrorHandler))
 	api.RegisterRoutes(app)
 	err := app.Run(fmt.Sprintf("%v:%v", HOST, PORT))
 	if err != nil {
