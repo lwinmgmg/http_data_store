@@ -25,7 +25,7 @@ func (user *UserCreate) Validate() error {
 	if user.UserName == nil {
 		return helper.NewCustomError("Username can't be empty", helper.ValidationError)
 	}
-	UserReg = regexp.MustCompile(`^[a-z]*[0-9a-z]*`)
+	UserReg = regexp.MustCompile(`^[a-z][a-z0-9]+$`)
 	isMatch := UserReg.MatchString(*user.UserName)
 	if !isMatch {
 		return helper.NewCustomError("Username can be use lowercase character and number", helper.ValidationError)
