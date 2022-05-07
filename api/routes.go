@@ -19,12 +19,18 @@ func RegisterRoutes(app *gin.Engine) {
 	router.PUT("/users/:id", cMgr.UpdateUserById)
 	router.DELETE("/users/:id", cMgr.DeleteUserById)
 
-	//Client Routes
 	clientRouter := app.Group("/api/client")
 	clientRouter.Use(middlewares.JWTAuthenticationMiddleware())
+
+	//Client File Routers
+	clientRouter.GET("/folders/:folder_id/files", cMgr.GetAllFile)
+	clientRouter.POST("/folders/:folder_id/files", cMgr.CreateFile)
+	clientRouter.GET("/folders/:folder_id/files/:file_id", cMgr.GetFileById)
+
+	//Client Folder Routes
 	clientRouter.GET("/folders", cMgr.GetAllFolder)
 	clientRouter.POST("/folders", cMgr.CreateFolder)
-	clientRouter.GET("/folders/:id", cMgr.GetFolderById)
-	clientRouter.DELETE("/folders/:id", cMgr.DeleteFolderById)
-	clientRouter.PUT("/folders/:id", cMgr.UpdateFolderById)
+	clientRouter.GET("/folders/:folder_id", cMgr.GetFolderById)
+	clientRouter.DELETE("/folders/:folder_id", cMgr.DeleteFolderById)
+	clientRouter.PUT("/folders/:folder_id", cMgr.UpdateFolderById)
 }

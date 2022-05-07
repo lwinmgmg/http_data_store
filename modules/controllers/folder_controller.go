@@ -41,7 +41,7 @@ func (cMgr *ControllerManager) CreateFolder(ctx *gin.Context) {
 
 func (cMgr *ControllerManager) GetFolderById(ctx *gin.Context) {
 	uid := ctx.MustGet("uid").(uint)
-	idStr := ctx.Param("id")
+	idStr := ctx.Param("folder_id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, map[string]string{"detail": err.Error()})
@@ -57,7 +57,7 @@ func (cMgr *ControllerManager) GetFolderById(ctx *gin.Context) {
 
 func (cMgr *ControllerManager) UpdateFolderById(ctx *gin.Context) {
 	uid := ctx.MustGet("uid").(uint)
-	idStr := ctx.Param("id")
+	idStr := ctx.Param("folder_id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, map[string]string{"detail": err.Error()})
@@ -79,7 +79,7 @@ func (cMgr *ControllerManager) UpdateFolderById(ctx *gin.Context) {
 
 func (cMgr *ControllerManager) DeleteFolderById(ctx *gin.Context) {
 	uid := ctx.MustGet("uid").(uint)
-	idStr := ctx.Param("id")
+	idStr := ctx.Param("folder_id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, map[string]string{"detail": err.Error()})
