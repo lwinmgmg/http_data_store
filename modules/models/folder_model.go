@@ -32,6 +32,10 @@ func GetFolderById[T any](uid, id uint, dest *T) error {
 	return db.Model(&Folder{}).Where("id=? AND user_id=?", id, uid).Take(dest).Error
 }
 
+func GetFolderByName[T any](name string, dest *T) error {
+	return db.Model(&Folder{}).Where("name=?", name).Take(dest).Error
+}
+
 func UpdateFolderById[T any](uid, id uint, data map[string]any) (*T, error) {
 	var result T
 	res := db.Model(&Folder{}).Where("id=? AND user_id=?", id, uid).Updates(data)

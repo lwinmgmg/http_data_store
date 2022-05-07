@@ -34,6 +34,12 @@ func GetFileById[T any](folder_id, id uint) (*T, error) {
 	return &result, err
 }
 
+func GetFileByName[T any](folder_id uint, filename string) (*T, error) {
+	var result T
+	err := db.Model(&File{}).Where("folder_id=? AND name=?", folder_id, filename).Take(&result).Error
+	return &result, err
+}
+
 func DeleteFileById[T any](folder_id, id uint) (*T, error) {
 	var result T
 	res := db.Model(&File{}).Where("folder_id=? AND id=?", folder_id, id).Take(&result)

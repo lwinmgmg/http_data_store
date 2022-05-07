@@ -33,4 +33,8 @@ func RegisterRoutes(app *gin.Engine) {
 	clientRouter.GET("/folders/:folder_id", cMgr.GetFolderById)
 	clientRouter.DELETE("/folders/:folder_id", cMgr.DeleteFolderById)
 	clientRouter.PUT("/folders/:folder_id", cMgr.UpdateFolderById)
+
+	//Temp URL route
+	tempRouter := app.Group("/temp")
+	tempRouter.GET("", cMgr.ServeTempUrl)
 }

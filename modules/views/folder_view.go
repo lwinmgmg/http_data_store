@@ -6,9 +6,10 @@ type FolderCreate struct {
 }
 
 type FolderRead struct {
-	ID   uint   `json:"id"`
-	Name string `json:"name"`
-	Key  string `json:"key"`
+	ID     uint   `json:"id"`
+	Name   string `json:"name"`
+	Key    string `json:"key"`
+	UserID uint   `json:"user_id"`
 }
 
 type FolderUpdate struct {

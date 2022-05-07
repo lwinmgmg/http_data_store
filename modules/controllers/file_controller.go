@@ -24,7 +24,7 @@ func GetFileRequirements(ctx *gin.Context) (uint, uint, error) {
 		return 0, 0, err
 	}
 	if folderRead.ID == 0 {
-		return 0, 0, fmt.Errorf("Folder ID [%v] not found!", folder_id)
+		return 0, 0, fmt.Errorf("folder id [%v] not found", folder_id)
 	}
 	return uid, uint(folder_id), nil
 }
