@@ -9,7 +9,13 @@ import (
 	"github.com/lwinmgmg/http_data_store/modules/views"
 )
 
-func (cmgr *CManager) GetAllUser(ctx *gin.Context) {
+func (cmgr *ControllerManager) GetAllUser(ctx *gin.Context) {
+	uid := ctx.MustGet("uid").(uint)
+	if uid != 1 {
+		ctx.Header("WWW-Authenticate", "Authorization Required")
+		ctx.JSON(http.StatusUnauthorized, map[string]string{"detail": "User not allow"})
+		return
+	}
 	users, err := models.GetAllUser()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, map[string]string{"detail": err.Error()})
@@ -18,7 +24,13 @@ func (cmgr *CManager) GetAllUser(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, users)
 }
 
-func (cmgr *CManager) GetUserById(ctx *gin.Context) {
+func (cmgr *ControllerManager) GetUserById(ctx *gin.Context) {
+	uid := ctx.MustGet("uid").(uint)
+	if uid != 1 {
+		ctx.Header("WWW-Authenticate", "Authorization Required")
+		ctx.JSON(http.StatusUnauthorized, map[string]string{"detail": "User not allow"})
+		return
+	}
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -36,7 +48,13 @@ func (cmgr *CManager) GetUserById(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, user)
 }
 
-func (cmgr *CManager) Create(ctx *gin.Context) {
+func (cmgr *ControllerManager) Create(ctx *gin.Context) {
+	uid := ctx.MustGet("uid").(uint)
+	if uid != 1 {
+		ctx.Header("WWW-Authenticate", "Authorization Required")
+		ctx.JSON(http.StatusUnauthorized, map[string]string{"detail": "User not allow"})
+		return
+	}
 	var user views.UserCreate
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, map[string]string{"detail": err.Error()})
@@ -58,7 +76,13 @@ func (cmgr *CManager) Create(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, dbUser)
 }
 
-func (cmgr *CManager) DeleteById(ctx *gin.Context) {
+func (cmgr *ControllerManager) DeleteUserById(ctx *gin.Context) {
+	uid := ctx.MustGet("uid").(uint)
+	if uid != 1 {
+		ctx.Header("WWW-Authenticate", "Authorization Required")
+		ctx.JSON(http.StatusUnauthorized, map[string]string{"detail": "User not allow"})
+		return
+	}
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -77,7 +101,13 @@ func (cmgr *CManager) DeleteById(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, user)
 }
 
-func (cmgr *CManager) UpdateById(ctx *gin.Context) {
+func (cmgr *ControllerManager) UpdateUserById(ctx *gin.Context) {
+	uid := ctx.MustGet("uid").(uint)
+	if uid != 1 {
+		ctx.Header("WWW-Authenticate", "Authorization Required")
+		ctx.JSON(http.StatusUnauthorized, map[string]string{"detail": "User not allow"})
+		return
+	}
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

@@ -1,4 +1,4 @@
 package controllers
 
-type CManager struct {
+type ControllerManager struct {
 }

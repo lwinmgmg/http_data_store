@@ -53,6 +53,12 @@ func GetUserIdByUserName(username string) uint {
 	return user.ID
 }
 
+func GetUserByUserName(username string) *User {
+	var user User
+	db.Select("id", "password").Where("username=?", username).First(&user)
+	return &user
+}
+
 func GetUserForUpdateById(id uint) (*User, *gorm.DB) {
 	var user User
 	tx := db.Begin()

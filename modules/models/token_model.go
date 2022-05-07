@@ -14,6 +14,14 @@ type Claim struct {
 	IssuedAt int64  `json:"iat,omitempty"`
 }
 
+func NewClaim(issuer string) Claim {
+	return Claim{
+		Issuer:   issuer,
+		Audience: env.HDS_TOKEN_AUDIENCE,
+		IssuedAt: time.Now().Unix(),
+	}
+}
+
 func (claim *Claim) GetIssuer() (uint, error) {
 	id := GetUserIdByUserName(claim.Issuer)
 	if id == 0 {
@@ -50,11 +58,9 @@ func GenerateToken(username string) (string, error) {
 
 func ValidateToken(tokenStr string) (uint, error) {
 	claim := Claim{}
-	fmt.Println("Started")
 	if _, err := jwt.ParseWithClaims(tokenStr, &claim, KeyFunc()); err != nil {
-		fmt.Println(err)
+		fmt.Println(claim)
 		return 0, err
 	}
-	fmt.Println("Parse done")
 	return claim.GetIssuer()
 }
