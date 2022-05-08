@@ -8,7 +8,6 @@ import (
 	"strings"
 )
 
-var err error
 var env *Environ
 
 type Environ struct {
@@ -40,9 +39,10 @@ type Environ struct {
 	HDS_ADMIN_PASSWORD string
 
 	//filestore
-	HDS_FIRST_DIRS []string
-	HDS_LAST_DIRS  []string
-	HDS_BACKUP_DIR string
+	HDS_FIRST_DIRS                  []string
+	HDS_LAST_DIRS                   []string
+	HDS_BACKUP_DIR                  string
+	HDS_GARBAGE_COLLECTOR_BK_ENABLE bool
 }
 
 func NewEnviron() *Environ {
@@ -74,9 +74,10 @@ func NewEnviron() *Environ {
 		HDS_TOKEN_DEFAULT_TIMEOUT: intParser(getEnviron("HDS_TOKEN_DEFAULT_TIMEOUT", 24*60*60), 24*60*60),
 		HDS_ADMIN_PASSWORD:        getEnviron("HDS_ADMIN_PASSWORD", "admin"),
 
-		HDS_FIRST_DIRS: stringListParser(getEnviron("HDS_FIRST_DIRS", ""), "HDS_FIRST_DIRS"),
-		HDS_LAST_DIRS:  stringListParser(getEnviron("HDS_LAST_DIRS", ""), "HDS_LAST_DIRS"),
-		HDS_BACKUP_DIR: bkdir,
+		HDS_FIRST_DIRS:                  stringListParser(getEnviron("HDS_FIRST_DIRS", ""), "HDS_FIRST_DIRS"),
+		HDS_LAST_DIRS:                   stringListParser(getEnviron("HDS_LAST_DIRS", ""), "HDS_LAST_DIRS"),
+		HDS_BACKUP_DIR:                  bkdir,
+		HDS_GARBAGE_COLLECTOR_BK_ENABLE: boolParser(getEnviron("HDS_GARBAGE_COLLECTOR_BK_ENABLE", true), true),
 	}
 }
 

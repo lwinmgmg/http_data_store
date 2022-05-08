@@ -1,6 +1,9 @@
 package models
 
 import (
+	"context"
+
+	"github.com/go-redis/redis/v8"
 	"github.com/lwinmgmg/http_data_store/dbm"
 	"github.com/lwinmgmg/http_data_store/environ"
 	"github.com/lwinmgmg/http_data_store/helper"
@@ -8,18 +11,25 @@ import (
 )
 
 var (
-	db     *gorm.DB
-	prefix *string
-	env    *environ.Environ = environ.GetAllEnv()
+	db           *gorm.DB
+	redis_client *redis.Client
+	common_ctx    context.Context = context.Background()
+	prefix       *string
+	env          *environ.Environ = environ.GetAllEnv()
 )
 
 func init() {
 	if db == nil {
-		if err := dbm.ConnectSqlite(); err != nil {
+		if err := dbm.ConnectMySql(); err != nil {
 			panic(err)
 		}
-		db = dbm.GetSqliteDatabase()
+		db = dbm.GetMySqlDatabase()
 	}
+	if redis_client == nil {
+		dbm.ConnectRedis()
+		redis_client = dbm.GetRedisConnection()
+	}
+	
 }
 
 func SettingUp(pref string) {

@@ -1,7 +1,9 @@
 package models
 
 import (
+	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -25,17 +27,17 @@ func NewClaim(issuer string) Claim {
 func (claim *Claim) GetIssuer() (uint, error) {
 	id := GetUserIdByUserName(claim.Issuer)
 	if id == 0 {
-		return 0, helper.NewCustomError("Unknown issuer", helper.AuthenticationError)
+		return 0, helper.NewCustomError( helper.AuthenticationError, "Unknown issuer")
 	}
 	return id, nil
 }
 
 func (claim *Claim) Valid() error {
 	if claim.IssuedAt > time.Now().Unix()+int64(env.HDS_TOKEN_DEFAULT_TIMEOUT) {
-		return helper.NewCustomError("Token has already expired", helper.AuthenticationError)
+		return helper.NewCustomError(helper.AuthenticationError, "Token has already expired")
 	}
 	if claim.Audience != env.HDS_TOKEN_AUDIENCE {
-		return helper.NewCustomError("Unknown audience", helper.AuthenticationError)
+		return helper.NewCustomError(helper.AuthenticationError, "Unknown audience")
 	}
 	return nil
 }
@@ -57,10 +59,26 @@ func GenerateToken(username string) (string, error) {
 }
 
 func ValidateToken(tokenStr string) (uint, error) {
+	ctx, cancel := context.WithTimeout(common_ctx, time.Millisecond*100)
+	defer cancel()
+	v, err := redis_client.Get(ctx, tokenStr).Result()
+	if err == nil {
+		out, err := strconv.Atoi(v)
+		if err == nil {
+			return uint(out), nil
+		}
+	}
 	claim := Claim{}
 	if _, err := jwt.ParseWithClaims(tokenStr, &claim, KeyFunc()); err != nil {
-		fmt.Println(claim)
 		return 0, err
 	}
-	return claim.GetIssuer()
+	uid, err := claim.GetIssuer()
+	if err != nil {
+		return 0, err
+	}
+	var duration int64 = claim.IssuedAt + int64(env.HDS_TOKEN_DEFAULT_TIMEOUT) - time.Now().Unix()
+	if err := redis_client.Set(ctx, tokenStr, uid, time.Second*time.Duration(duration)).Err(); err != nil {
+		fmt.Println(err, "Error on key set")
+	}
+	return uid, nil
 }

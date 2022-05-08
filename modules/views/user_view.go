@@ -23,18 +23,18 @@ type UserCreate struct {
 
 func (user *UserCreate) Validate() error {
 	if user.UserName == nil {
-		return helper.NewCustomError("Username can't be empty", helper.ValidationError)
+		return helper.NewCustomError(helper.ValidationError, "Username can't be empty")
 	}
 	UserReg = regexp.MustCompile(`^[a-z][a-z0-9]+$`)
 	isMatch := UserReg.MatchString(*user.UserName)
 	if !isMatch {
-		return helper.NewCustomError("Username can be use lowercase character and number", helper.ValidationError)
+		return helper.NewCustomError(helper.ValidationError, "Username can be use lowercase character and number")
 	}
 	if user.Password == nil {
-		return helper.NewCustomError("Password can't be empty", helper.ValidationError)
+		return helper.NewCustomError(helper.ValidationError, "Password can't be empty")
 	}
 	if len(*(user.Password)) < 8 {
-		return helper.NewCustomError("Password must have at least 8 character", helper.ValidationError)
+		return helper.NewCustomError(helper.ValidationError, "Password must have at least 8 character")
 	}
 	*user.Password = helper.HexString(*user.Password)
 	return nil
@@ -52,13 +52,13 @@ func (user *UserUpdate) Validate() (map[string]interface{}, error) {
 		UserReg = regexp.MustCompile(`^[a-z]*[0-9a-z]*`)
 		isMatch := UserReg.MatchString(*user.UserName)
 		if !isMatch {
-			return nil, helper.NewCustomError("Username can be use lowercase character and number", helper.ValidationError)
+			return nil, helper.NewCustomError(helper.ValidationError, "Username can be use lowercase character and number")
 		}
 		userMap["username"] = *user.UserName
 	}
 	if user.Password != nil {
 		if len(*user.Password) < 8 {
-			return nil, helper.NewCustomError("Password must have at least 8 character", helper.ValidationError)
+			return nil, helper.NewCustomError(helper.ValidationError, "Password must have at least 8 character")
 		}
 		userMap["password"] = helper.HexString(*user.Password)
 	}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lwinmgmg/http_data_store/api"
+	"github.com/lwinmgmg/http_data_store/cron"
 	"github.com/lwinmgmg/http_data_store/environ"
 	"github.com/lwinmgmg/http_data_store/middlewares"
 	"github.com/lwinmgmg/http_data_store/modules/models"
@@ -21,6 +22,7 @@ func main() {
 	app := gin.New()
 	app.Use(gin.Logger(), gin.CustomRecovery(middlewares.InternalServerErrorHandler))
 	api.RegisterRoutes(app)
+	cron.StartGarbageCollector()
 	err := app.Run(fmt.Sprintf("%v:%v", HOST, PORT))
 	if err != nil {
 		fmt.Println("Error on running server :", err)

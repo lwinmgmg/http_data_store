@@ -1,6 +1,12 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"context"
+	"time"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+)
 
 type File struct {
 	gorm.Model
@@ -47,4 +53,46 @@ func DeleteFileById[T any](folder_id, id uint) (*T, error) {
 		return &result, res.Error
 	}
 	return &result, res.Unscoped().Delete(&File{}).Error
+}
+
+func GetFileByNameForUpdate[T any](folder_id uint, filename string) (*T, *gorm.DB, error) {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	var result T
+	var id uint
+	err := db.Model(&File{}).Select("id").Where("folder_id=? AND name=?", folder_id, filename).Take(&id).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, tx, nil
+		}
+		return nil, tx, err
+	}
+	file_ctx, cancel := context.WithTimeout(common_ctx, 5*time.Second)
+	defer cancel()
+	err = tx.WithContext(file_ctx).Model(&File{}).Clauses(
+		clause.Locking{
+			Strength: "UPDATE",
+		},
+	).Where("id=?", id).Take(&result).Error
+	return &result, tx, err
+}
+
+func UpdateThroughTransactionById[T any](id uint, data map[string]any, tx *gorm.DB) (*T, error) {
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+		}
+	}()
+	defer tx.Commit()
+	var result T
+	res := tx.Model(&File{}).Where("id=?", id).Updates(data)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	err := res.Take(&result).Error
+	return &result, err
 }

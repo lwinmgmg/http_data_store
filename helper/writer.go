@@ -88,22 +88,22 @@ type WriterManager struct {
 	BackupDir string
 }
 
-func (self *WriterManager) WriteOriginal() (int64, int64, error) {
+func (wMgr *WriterManager) WriteOriginal() (int64, int64, error) {
 	var firstSize, lastSize int64
 	chunkSize := 10 * 1024 * 1024
-	halfSize := self.TotalSize / 2
+	halfSize := wMgr.TotalSize / 2
 	var buf []byte
 	if halfSize < int64(chunkSize) {
 		buf = make([]byte, halfSize/2)
 	} else {
 		buf = make([]byte, chunkSize)
 	}
-	firstFile, firstFileName, err := selectFile(self.FirstDirs, self.FileName)
+	firstFile, firstFileName, err := selectFile(wMgr.FirstDirs, wMgr.FileName)
 	if err != nil {
 		return firstSize, lastSize, err
 	}
 	defer firstFile.Close()
-	lastFile, lastFileName, err := selectFile(self.LastDirs, self.FileName)
+	lastFile, lastFileName, err := selectFile(wMgr.LastDirs, wMgr.FileName)
 	if err != nil {
 		return firstSize, lastSize, err
 	}
@@ -116,7 +116,7 @@ func (self *WriterManager) WriteOriginal() (int64, int64, error) {
 	var tmpReadSize int
 	var control int = 0
 	for {
-		tmpReadSize, err = self.Reader.Read(buf)
+		tmpReadSize, err = wMgr.Reader.Read(buf)
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -135,9 +135,9 @@ func (self *WriterManager) WriteOriginal() (int64, int64, error) {
 		}
 	}
 	lastSize = readSize
-	go ArchiveWriter(path.Join(self.BackupDir, self.FileName), self.FileName, [2]string{firstFileName, lastFileName})
-	go copyFiles(firstFileName, self.FileName, self.FirstDirs)
-	go copyFiles(lastFileName, self.FileName, self.LastDirs)
+	go ArchiveWriter(path.Join(wMgr.BackupDir, wMgr.FileName), wMgr.FileName, [2]string{firstFileName, lastFileName})
+	go copyFiles(firstFileName, wMgr.FileName, wMgr.FirstDirs)
+	go copyFiles(lastFileName, wMgr.FileName, wMgr.LastDirs)
 	return firstSize, lastSize, nil
 }
 
@@ -158,7 +158,7 @@ func CheckDirectoryExistOrNot(filePath string) error {
 		return err
 	}
 	if !fInfo.IsDir() {
-		return fmt.Errorf("%v file does not exist!", filePath)
+		return fmt.Errorf("%v file does not exist", filePath)
 	}
 	return nil
 }

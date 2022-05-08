@@ -45,7 +45,6 @@ func (ctr *ControllerManager) ServeTempUrl(ctx *gin.Context) {
 	}
 	for i := 0; i < 2; i++ {
 		values1 := helper.HexString(fmt.Sprintf("%v:%v:%v:%v", query.File, query.FolderName, query.ExpireTime, keyList[i]))
-		fmt.Println(values1)
 		if values1 == query.HashKey {
 			file, err := models.GetFileByName[models.File](folder.ID, query.File)
 			if err != nil {
