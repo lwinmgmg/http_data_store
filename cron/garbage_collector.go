@@ -10,7 +10,7 @@ import (
 
 var (
 	GarbageChannel chan string      = make(chan string, 1000)
-	env            *environ.Environ = environ.NewEnviron()
+	env            *environ.Environ = environ.GetAllEnv()
 )
 
 func GetGarbageChannelWriter() chan<- string {

@@ -13,7 +13,7 @@ import (
 	"github.com/lwinmgmg/http_data_store/environ"
 )
 
-var env *environ.Environ = environ.NewEnviron()
+var env *environ.Environ = environ.GetAllEnv()
 
 func selectFile(preFixs []string, name string) (file *os.File, fileName string, err error) {
 	for _, v := range preFixs {
