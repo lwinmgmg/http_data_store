@@ -27,7 +27,7 @@ func NewClaim(issuer string) Claim {
 func (claim *Claim) GetIssuer() (uint, error) {
 	id := GetUserIdByUserName(claim.Issuer)
 	if id == 0 {
-		return 0, helper.NewCustomError( helper.AuthenticationError, "Unknown issuer")
+		return 0, helper.NewCustomError(helper.AuthenticationError, "Unknown issuer")
 	}
 	return id, nil
 }
@@ -72,11 +72,17 @@ func ValidateToken(tokenStr string) (uint, error) {
 	if _, err := jwt.ParseWithClaims(tokenStr, &claim, KeyFunc()); err != nil {
 		return 0, err
 	}
+	if err := claim.Valid(); err != nil {
+		return 0, err
+	}
 	uid, err := claim.GetIssuer()
 	if err != nil {
 		return 0, err
 	}
 	var duration int64 = claim.IssuedAt + int64(env.HDS_TOKEN_DEFAULT_TIMEOUT) - time.Now().Unix()
+	if duration < 0 {
+		return 0, helper.NewCustomError(helper.AuthenticationError, "Token has already expired")
+	}
 	if err := redis_client.Set(ctx, tokenStr, uid, time.Second*time.Duration(duration)).Err(); err != nil {
 		fmt.Println(err, "Error on key set")
 	}

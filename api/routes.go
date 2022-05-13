@@ -6,35 +6,38 @@ import (
 	"github.com/lwinmgmg/http_data_store/modules/controllers"
 )
 
-func RegisterRoutes(app *gin.Engine) {
+var app *gin.Engine
+
+func init() {
+	if app == nil {
+		app = gin.New()
+	}
+	app.Use(gin.Logger(), gin.CustomRecovery(middlewares.InternalServerErrorHandler))
+}
+
+func GetApp() *gin.Engine {
+	return app
+}
+
+func RegisterRoutes() {
 	cMgr := &controllers.ControllerManager{}
-
+	v1Router := app.Group("/v1")
 	//Admin Routes
-	router := app.Group("/api")
-	router.Use(middlewares.BasicAuthenticationMiddleware())
-	router.GET("/token", cMgr.GetToken)
-	router.GET("/users", cMgr.GetAllUser)
-	router.POST("/users", cMgr.Create)
-	router.GET("/users/:id", cMgr.GetUserById)
-	router.PUT("/users/:id", cMgr.UpdateUserById)
-	router.DELETE("/users/:id", cMgr.DeleteUserById)
+	router := v1Router.Group("/api")
+	RegisterUserRoutes(router, cMgr)
 
-	clientRouter := app.Group("/api/client")
-	clientRouter.Use(middlewares.JWTAuthenticationMiddleware())
+	//Token Routes
+	RegisterTokenRoutes(router, cMgr)
 
-	//Client File Routers
-	clientRouter.GET("/folders/:folder_id/files", cMgr.GetAllFile)
-	clientRouter.POST("/folders/:folder_id/files", cMgr.CreateFile)
-	clientRouter.GET("/folders/:folder_id/files/:file_id", cMgr.GetFileById)
-
+	clientRouter := v1Router.Group("/api/client")
 	//Client Folder Routes
-	clientRouter.GET("/folders", cMgr.GetAllFolder)
-	clientRouter.POST("/folders", cMgr.CreateFolder)
-	clientRouter.GET("/folders/:folder_id", cMgr.GetFolderById)
-	clientRouter.DELETE("/folders/:folder_id", cMgr.DeleteFolderById)
-	clientRouter.PUT("/folders/:folder_id", cMgr.UpdateFolderById)
+	RegisterFolderRoutes(clientRouter, cMgr)
+
+	//Client File Routes
+	RegisterFileRoutes(clientRouter, cMgr)
 
 	//Temp URL route
-	tempRouter := app.Group("/temp")
-	tempRouter.GET("", cMgr.ServeTempUrl)
+	tempRouter := v1Router.Group("/temp")
+	RegisterTempUrlRoutes(tempRouter, cMgr)
+
 }
