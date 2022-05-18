@@ -16,10 +16,27 @@ func (user *User) TableName() string {
 	return *prefix + "_users"
 }
 
-func (user *User) Create() (*User, error) {
-	err := db.Create(user).Error
-	return user, err
+func (user *User) GetID() uint {
+	return user.ID
 }
+
+func (user *User) Create(output any) error {
+	err := db.Model(user).Create(user).Error
+	if err != nil {
+		return err
+	}
+	return db.Model(user).Take(output, user.ID).Error
+}
+
+func (user *User) GetAll(users any) error {
+	return db.Model(user).Find(users).Error
+}
+
+func (user *User) GetByID(id int, output any) error {
+	return db.Model(user).First(output, id).Error
+}
+
+// func (user *User) GetByIDs()
 
 func GetAllUser() ([]User, error) {
 	var users []User

@@ -18,6 +18,10 @@ func (folder *Folder) TableName() string {
 	return *prefix + "_folders"
 }
 
+func (folder *Folder) GetID() uint {
+	return folder.ID
+}
+
 func (folder *Folder) Create() (*Folder, error) {
 	err := db.Create(folder).Error
 	return folder, err

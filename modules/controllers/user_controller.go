@@ -16,7 +16,9 @@ func (cmgr *ControllerManager) GetAllUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, map[string]string{"detail": "User not allow"})
 		return
 	}
-	users, err := models.GetAllUser()
+	user := &models.User{}
+	users := []views.UserRead{}
+	err := user.GetAll(&users)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, map[string]string{"detail": err.Error()})
 		return
@@ -68,12 +70,13 @@ func (cmgr *ControllerManager) Create(ctx *gin.Context) {
 		UserName: *user.UserName,
 		Password: *user.Password,
 	}
-	dbUser, err := dbUser.Create()
+	outputUser := views.UserRead{}
+	err := dbUser.Create(&outputUser)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, map[string]string{"detail": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, dbUser)
+	ctx.IndentedJSON(http.StatusOK, outputUser)
 }
 
 func (cmgr *ControllerManager) DeleteUserById(ctx *gin.Context) {

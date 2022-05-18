@@ -23,6 +23,10 @@ func (file *File) TableName() string {
 	return *prefix + "_files"
 }
 
+func (file *File) GetID() uint {
+	return file.ID
+}
+
 func (file *File) Create() (*File, error) {
 	err := db.Create(file).Error
 	return file, err
